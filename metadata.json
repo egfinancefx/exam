@@ -1,0 +1,7 @@
+{
+  "name": "Trading Mastery Quiz",
+  "description": "A sophisticated trading evaluation platform with AI-powered feedback, featuring a 10-step interactive assessment, file uploads, and progress tracking.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
