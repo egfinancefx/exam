@@ -2,7 +2,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { TRADING_QUESTIONS } from "../constants";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || 'FAKE_API_KEY_FOR_DEVELOPMENT' });
 
 export async function getQuizFeedback(
   answers: Record<number, number>, 
@@ -13,24 +13,24 @@ export async function getQuizFeedback(
 
   const resultSummary = TRADING_QUESTIONS.map((q, idx) => {
     const userAnswer = answers[idx];
-    const userReason = reasoning[idx] ? `\nسبب المستخدم: ${reasoning[idx]}` : '';
+    const userReason = reasoning[idx] ? `\nØ³Ø¨Ø¨ Ø§ÙÙØ³ØªØ®Ø¯Ù: ${reasoning[idx]}` : '';
     const isCorrect = userAnswer === q.correctAnswer;
-    return `السؤال: ${q.text}\nإجابة المستخدم: ${q.options[userAnswer] || 'لم يجب'}\nالنتيجة: ${isCorrect ? 'صحيحة' : 'خاطئة'}${userReason}`;
+    return `Ø§ÙØ³Ø¤Ø§Ù: ${q.text}\nØ¥Ø¬Ø§Ø¨Ø© Ø§ÙÙØ³ØªØ®Ø¯Ù: ${q.options[userAnswer] || 'ÙÙ ÙØ¬Ø¨'}\nØ§ÙÙØªÙØ¬Ø©: ${isCorrect ? 'ØµØ­ÙØ­Ø©' : 'Ø®Ø§Ø·Ø¦Ø©'}${userReason}`;
   }).join('\n\n');
 
   const promptText = `
-    أنت كبير استراتيجيي التداول في صندوق استثماري. قم بتقييم المتداول بناءً على النتائج التالية:
+    Ø£ÙØª ÙØ¨ÙØ± Ø§Ø³ØªØ±Ø§ØªÙØ¬ÙÙ Ø§ÙØªØ¯Ø§ÙÙ ÙÙ ØµÙØ¯ÙÙ Ø§Ø³ØªØ«ÙØ§Ø±Ù. ÙÙ Ø¨ØªÙÙÙÙ Ø§ÙÙØªØ¯Ø§ÙÙ Ø¨ÙØ§Ø¡Ù Ø¹ÙÙ Ø§ÙÙØªØ§Ø¦Ø¬ Ø§ÙØªØ§ÙÙØ©:
     ${resultSummary}
     
-    يجب أن يكون تقريرك موجزاً جداً، احترافياً، وباللغة العربية الفصحى المعاصرة. استخدم التنسيق التالي بدقة:
+    ÙØ¬Ø¨ Ø£Ù ÙÙÙÙ ØªÙØ±ÙØ±Ù ÙÙØ¬Ø²Ø§Ù Ø¬Ø¯Ø§ÙØ Ø§Ø­ØªØ±Ø§ÙÙØ§ÙØ ÙØ¨Ø§ÙÙØºØ© Ø§ÙØ¹Ø±Ø¨ÙØ© Ø§ÙÙØµØ­Ù Ø§ÙÙØ¹Ø§ØµØ±Ø©. Ø§Ø³ØªØ®Ø¯Ù Ø§ÙØªÙØ³ÙÙ Ø§ÙØªØ§ÙÙ Ø¨Ø¯ÙØ©:
     
-    [LEVEL]: (مبتدئ | متوسط | محترف)
-    [STRENGTHS]: (3 نقاط قوة مختصرة جداً عن رؤيته الفنية)
-    [WEAKNESSES]: (3 نقاط ضعف يجب معالجتها فوراً)
-    [ROADMAP]: (خطة عمل من خطوتين للتطوير)
-    [PSYCHOLOGY]: (نصيحة سيكولوجية واحدة قوية)
+    [LEVEL]: (ÙØ¨ØªØ¯Ø¦ | ÙØªÙØ³Ø· | ÙØ­ØªØ±Ù)
+    [STRENGTHS]: (3 ÙÙØ§Ø· ÙÙØ© ÙØ®ØªØµØ±Ø© Ø¬Ø¯Ø§Ù Ø¹Ù Ø±Ø¤ÙØªÙ Ø§ÙÙÙÙØ©)
+    [WEAKNESSES]: (3 ÙÙØ§Ø· Ø¶Ø¹Ù ÙØ¬Ø¨ ÙØ¹Ø§ÙØ¬ØªÙØ§ ÙÙØ±Ø§Ù)
+    [ROADMAP]: (Ø®Ø·Ø© Ø¹ÙÙ ÙÙ Ø®Ø·ÙØªÙÙ ÙÙØªØ·ÙÙØ±)
+    [PSYCHOLOGY]: (ÙØµÙØ­Ø© Ø³ÙÙÙÙÙØ¬ÙØ© ÙØ§Ø­Ø¯Ø© ÙÙÙØ©)
 
-    ملاحظة: إذا ذكر أسباباً فنية (Reasoning)، فقم بتحليل جودة منطقه وليس فقط صحة الإجابة. ركز على مفاهيم SMC و Liquidity.
+    ÙÙØ§Ø­Ø¸Ø©: Ø¥Ø°Ø§ Ø°ÙØ± Ø£Ø³Ø¨Ø§Ø¨Ø§Ù ÙÙÙØ© (Reasoning)Ø ÙÙÙ Ø¨ØªØ­ÙÙÙ Ø¬ÙØ¯Ø© ÙÙØ·ÙÙ ÙÙÙØ³ ÙÙØ· ØµØ­Ø© Ø§ÙØ¥Ø¬Ø§Ø¨Ø©. Ø±ÙØ² Ø¹ÙÙ ÙÙØ§ÙÙÙ SMC Ù Liquidity.
   `;
 
   parts.push({ text: promptText });
@@ -64,6 +64,6 @@ export async function getQuizFeedback(
     return response.text;
   } catch (error) {
     console.error("Error fetching AI feedback:", error);
-    return "[LEVEL]: غير محدد\n[STRENGTHS]: تعذر التحليل\n[WEAKNESSES]: تعذر التحليل\n[ROADMAP]: استمر في التدريب\n[PSYCHOLOGY]: حافظ على انضباطك";
+    return "[LEVEL]: ØºÙØ± ÙØ­Ø¯Ø¯\n[STRENGTHS]: ØªØ¹Ø°Ø± Ø§ÙØªØ­ÙÙÙ\n[WEAKNESSES]: ØªØ¹Ø°Ø± Ø§ÙØªØ­ÙÙÙ\n[ROADMAP]: Ø§Ø³ØªÙØ± ÙÙ Ø§ÙØªØ¯Ø±ÙØ¨\n[PSYCHOLOGY]: Ø­Ø§ÙØ¸ Ø¹ÙÙ Ø§ÙØ¶Ø¨Ø§Ø·Ù";
   }
 }
